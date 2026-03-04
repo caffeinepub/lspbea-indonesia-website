@@ -116,13 +116,15 @@ export default function Footer() {
               </li>
             </ul>
             <div className="flex gap-3 mt-4">
-              <button
-                type="button"
+              <a
+                href="https://www.facebook.com/people/Bea-Indonesia/100070531832168/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors"
                 aria-label="Facebook"
               >
                 <SiFacebook className="h-4 w-4 text-primary" />
-              </button>
+              </a>
               <button
                 type="button"
                 className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors"
