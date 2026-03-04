@@ -1,0 +1,14 @@
+{
+  "frontend/src/App.tsx": "Main application component that renders HomePage and includes Sonner toast notifications provider.",
+  "frontend/src/pages/HomePage.tsx": "Home page layout component that composes all sections including Header, Hero, About, Services, Team, Contact, FileUpload, and Footer.",
+  "frontend/src/components/Header.tsx": "Fixed navigation header with building-themed logo, domain display (lspbea.id.ic0.app) with globe icon beneath the logo, desktop/mobile menu including \"Unggah\" link, and smooth scroll navigation to page sections.",
+  "frontend/src/components/Hero.tsx": "Hero section with background image, headline, description, and call-to-action buttons.",
+  "frontend/src/components/About.tsx": "About section showcasing LSPBEA Indonesia's mission, values, and key features with cards and imagery.",
+  "frontend/src/components/Services.tsx": "Services section displaying six service offerings in a responsive grid layout with icons and descriptions.",
+  "frontend/src/components/Team.tsx": "Team section highlighting professional staff with image and key competencies.",
+  "frontend/src/components/Contact.tsx": "Contact section with contact information cards and functional contact form using toast notifications for user feedback.",
+  "frontend/src/components/Footer.tsx": "Footer component with building-themed logo, domain display (lspbea.id.ic0.app) with globe icon, quick links, services list, contact info displaying phone number +6211100923, social media icons, and clean LSPBEA Indonesia copyright notice without external service attributions.",
+  "frontend/src/index.css": "Global styles with OKLCH color system customized with blue primary colors for professional engineering theme.",
+  "frontend/src/hooks/useQueries.ts": "React Query hooks for file upload and retrieval operations, managing backend interactions with progress tracking and cache invalidation.",
+  "frontend/src/components/FileUpload.tsx": "File upload component with drag-and-drop interface, upload progress indicator, and list of uploaded certificates with metadata display including file icons, sizes, and timestamps, using \"Sertifikat\" terminology throughout."
+}
