@@ -1,32 +1,81 @@
 import MixinStorage "blob-storage/Mixin";
 import Storage "blob-storage/Storage";
-import Time "mo:core/Time";
 import List "mo:core/List";
+import Time "mo:core/Time";
 import Text "mo:core/Text";
+
+
 
 actor {
   include MixinStorage();
 
-  type FileMetadata = {
+  type Education = {
+    institution : Text;
+    degree : Text;
+    yearGraduated : Nat;
+    certificate : ?Storage.ExternalBlob;
+  };
+
+  type WorkExperience = {
+    company : Text;
+    position : Text;
+    durationInMonths : Nat;
+    description : Text;
+  };
+
+  type Skill = {
     name : Text;
-    size : Nat;
-    uploadTime : Time.Time;
-    blob : Storage.ExternalBlob;
+    level : Text;
   };
 
-  let files = List.empty<FileMetadata>();
+  type CertificationForm = {
+    id : Text;
+    name : Text;
+    email : Text;
+    education : [Education];
+    workExperience : [WorkExperience];
+    skills : [Skill];
+    cv : ?Storage.ExternalBlob;
+    portfolio : ?Storage.ExternalBlob;
+    additionalFiles : [Storage.ExternalBlob];
+    timestamp : Time.Time;
+  };
 
-  public shared ({ caller }) func uploadFile(blob : Storage.ExternalBlob, name : Text, size : Nat) : async () {
-    let file : FileMetadata = {
-      name;
-      size;
-      uploadTime = Time.now();
-      blob;
+  type CertificationFormInput = {
+    name : Text;
+    email : Text;
+    education : [Education];
+    workExperience : [WorkExperience];
+    skills : [Skill];
+    cv : ?Storage.ExternalBlob;
+    portfolio : ?Storage.ExternalBlob;
+    additionalFiles : [Storage.ExternalBlob];
+  };
+
+  let forms = List.empty<CertificationForm>();
+
+  // Submit certification form.
+  public shared ({ caller }) func submitForm(input : CertificationFormInput) : async Text {
+    let id = "form-" # forms.size().toText();
+    let form : CertificationForm = {
+      id;
+      name = input.name;
+      email = input.email;
+      education = input.education;
+      workExperience = input.workExperience;
+      skills = input.skills;
+      cv = input.cv;
+      portfolio = input.portfolio;
+      additionalFiles = input.additionalFiles;
+      timestamp = Time.now();
     };
-    files.add(file);
+
+    forms.add(form);
+    id;
   };
 
-  public query ({ caller }) func getFiles() : async [FileMetadata] {
-    files.toArray();
+  // Get all certification forms.
+  public query ({ caller }) func getForms() : async [CertificationForm] {
+    forms.toArray();
   };
 };

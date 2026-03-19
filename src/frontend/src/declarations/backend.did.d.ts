@@ -10,14 +10,43 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
-export type ExternalBlob = Uint8Array;
-export interface FileMetadata {
-  'blob' : ExternalBlob,
+export interface CertificationForm {
+  'cv' : [] | [ExternalBlob],
+  'id' : string,
+  'portfolio' : [] | [ExternalBlob],
   'name' : string,
-  'size' : bigint,
-  'uploadTime' : Time,
+  'education' : Array<Education>,
+  'workExperience' : Array<WorkExperience>,
+  'email' : string,
+  'additionalFiles' : Array<ExternalBlob>,
+  'timestamp' : Time,
+  'skills' : Array<Skill>,
 }
+export interface CertificationFormInput {
+  'cv' : [] | [ExternalBlob],
+  'portfolio' : [] | [ExternalBlob],
+  'name' : string,
+  'education' : Array<Education>,
+  'workExperience' : Array<WorkExperience>,
+  'email' : string,
+  'additionalFiles' : Array<ExternalBlob>,
+  'skills' : Array<Skill>,
+}
+export interface Education {
+  'certificate' : [] | [ExternalBlob],
+  'institution' : string,
+  'degree' : string,
+  'yearGraduated' : bigint,
+}
+export type ExternalBlob = Uint8Array;
+export interface Skill { 'name' : string, 'level' : string }
 export type Time = bigint;
+export interface WorkExperience {
+  'description' : string,
+  'company' : string,
+  'position' : string,
+  'durationInMonths' : bigint,
+}
 export interface _CaffeineStorageCreateCertificateResult {
   'method' : string,
   'blob_hash' : string,
@@ -45,8 +74,8 @@ export interface _SERVICE {
     _CaffeineStorageRefillResult
   >,
   '_caffeineStorageUpdateGatewayPrincipals' : ActorMethod<[], undefined>,
-  'getFiles' : ActorMethod<[], Array<FileMetadata>>,
-  'uploadFile' : ActorMethod<[ExternalBlob, string, bigint], undefined>,
+  'getForms' : ActorMethod<[], Array<CertificationForm>>,
+  'submitForm' : ActorMethod<[CertificationFormInput], string>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

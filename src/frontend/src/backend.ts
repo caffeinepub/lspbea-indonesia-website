@@ -89,23 +89,55 @@ export class ExternalBlob {
         return this;
     }
 }
+export type Time = bigint;
+export interface CertificationFormInput {
+    cv?: ExternalBlob;
+    portfolio?: ExternalBlob;
+    name: string;
+    education: Array<Education>;
+    workExperience: Array<WorkExperience>;
+    email: string;
+    additionalFiles: Array<ExternalBlob>;
+    skills: Array<Skill>;
+}
+export interface Skill {
+    name: string;
+    level: string;
+}
+export interface WorkExperience {
+    description: string;
+    company: string;
+    position: string;
+    durationInMonths: bigint;
+}
+export interface _CaffeineStorageRefillInformation {
+    proposed_top_up_amount?: bigint;
+}
+export interface Education {
+    certificate?: ExternalBlob;
+    institution: string;
+    degree: string;
+    yearGraduated: bigint;
+}
+export interface CertificationForm {
+    cv?: ExternalBlob;
+    id: string;
+    portfolio?: ExternalBlob;
+    name: string;
+    education: Array<Education>;
+    workExperience: Array<WorkExperience>;
+    email: string;
+    additionalFiles: Array<ExternalBlob>;
+    timestamp: Time;
+    skills: Array<Skill>;
+}
 export interface _CaffeineStorageCreateCertificateResult {
     method: string;
     blob_hash: string;
 }
-export type Time = bigint;
-export interface FileMetadata {
-    blob: ExternalBlob;
-    name: string;
-    size: bigint;
-    uploadTime: Time;
-}
 export interface _CaffeineStorageRefillResult {
     success?: boolean;
     topped_up_amount?: bigint;
-}
-export interface _CaffeineStorageRefillInformation {
-    proposed_top_up_amount?: bigint;
 }
 export interface backendInterface {
     _caffeineStorageBlobIsLive(hash: Uint8Array): Promise<boolean>;
@@ -114,10 +146,10 @@ export interface backendInterface {
     _caffeineStorageCreateCertificate(blobHash: string): Promise<_CaffeineStorageCreateCertificateResult>;
     _caffeineStorageRefillCashier(refillInformation: _CaffeineStorageRefillInformation | null): Promise<_CaffeineStorageRefillResult>;
     _caffeineStorageUpdateGatewayPrincipals(): Promise<void>;
-    getFiles(): Promise<Array<FileMetadata>>;
-    uploadFile(blob: ExternalBlob, name: string, size: bigint): Promise<void>;
+    getForms(): Promise<Array<CertificationForm>>;
+    submitForm(input: CertificationFormInput): Promise<string>;
 }
-import type { ExternalBlob as _ExternalBlob, FileMetadata as _FileMetadata, Time as _Time, _CaffeineStorageRefillInformation as __CaffeineStorageRefillInformation, _CaffeineStorageRefillResult as __CaffeineStorageRefillResult } from "./declarations/backend.did.d.ts";
+import type { CertificationForm as _CertificationForm, CertificationFormInput as _CertificationFormInput, Education as _Education, ExternalBlob as _ExternalBlob, Skill as _Skill, Time as _Time, WorkExperience as _WorkExperience, _CaffeineStorageRefillInformation as __CaffeineStorageRefillInformation, _CaffeineStorageRefillResult as __CaffeineStorageRefillResult } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
     async _caffeineStorageBlobIsLive(arg0: Uint8Array): Promise<boolean> {
@@ -204,43 +236,49 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async getFiles(): Promise<Array<FileMetadata>> {
+    async getForms(): Promise<Array<CertificationForm>> {
         if (this.processError) {
             try {
-                const result = await this.actor.getFiles();
+                const result = await this.actor.getForms();
                 return from_candid_vec_n8(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.getFiles();
+            const result = await this.actor.getForms();
             return from_candid_vec_n8(this._uploadFile, this._downloadFile, result);
         }
     }
-    async uploadFile(arg0: ExternalBlob, arg1: string, arg2: bigint): Promise<void> {
+    async submitForm(arg0: CertificationFormInput): Promise<string> {
         if (this.processError) {
             try {
-                const result = await this.actor.uploadFile(await to_candid_ExternalBlob_n12(this._uploadFile, this._downloadFile, arg0), arg1, arg2);
+                const result = await this.actor.submitForm(await to_candid_CertificationFormInput_n17(this._uploadFile, this._downloadFile, arg0));
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.uploadFile(await to_candid_ExternalBlob_n12(this._uploadFile, this._downloadFile, arg0), arg1, arg2);
+            const result = await this.actor.submitForm(await to_candid_CertificationFormInput_n17(this._uploadFile, this._downloadFile, arg0));
             return result;
         }
     }
 }
-async function from_candid_ExternalBlob_n11(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _ExternalBlob): Promise<ExternalBlob> {
-    return await _downloadFile(value);
-}
-async function from_candid_FileMetadata_n9(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _FileMetadata): Promise<FileMetadata> {
+async function from_candid_CertificationForm_n9(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _CertificationForm): Promise<CertificationForm> {
     return await from_candid_record_n10(_uploadFile, _downloadFile, value);
+}
+async function from_candid_Education_n14(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Education): Promise<Education> {
+    return await from_candid_record_n15(_uploadFile, _downloadFile, value);
+}
+async function from_candid_ExternalBlob_n12(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _ExternalBlob): Promise<ExternalBlob> {
+    return await _downloadFile(value);
 }
 function from_candid__CaffeineStorageRefillResult_n4(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: __CaffeineStorageRefillResult): _CaffeineStorageRefillResult {
     return from_candid_record_n5(_uploadFile, _downloadFile, value);
+}
+async function from_candid_opt_n11(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_ExternalBlob]): Promise<ExternalBlob | null> {
+    return value.length === 0 ? null : await from_candid_ExternalBlob_n12(_uploadFile, _downloadFile, value[0]);
 }
 function from_candid_opt_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [boolean]): boolean | null {
     return value.length === 0 ? null : value[0];
@@ -249,21 +287,57 @@ function from_candid_opt_n7(_uploadFile: (file: ExternalBlob) => Promise<Uint8Ar
     return value.length === 0 ? null : value[0];
 }
 async function from_candid_record_n10(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
-    blob: _ExternalBlob;
+    cv: [] | [_ExternalBlob];
+    id: string;
+    portfolio: [] | [_ExternalBlob];
     name: string;
-    size: bigint;
-    uploadTime: _Time;
+    education: Array<_Education>;
+    workExperience: Array<_WorkExperience>;
+    email: string;
+    additionalFiles: Array<_ExternalBlob>;
+    timestamp: _Time;
+    skills: Array<_Skill>;
 }): Promise<{
-    blob: ExternalBlob;
+    cv?: ExternalBlob;
+    id: string;
+    portfolio?: ExternalBlob;
     name: string;
-    size: bigint;
-    uploadTime: Time;
+    education: Array<Education>;
+    workExperience: Array<WorkExperience>;
+    email: string;
+    additionalFiles: Array<ExternalBlob>;
+    timestamp: Time;
+    skills: Array<Skill>;
 }> {
     return {
-        blob: await from_candid_ExternalBlob_n11(_uploadFile, _downloadFile, value.blob),
+        cv: record_opt_to_undefined(await from_candid_opt_n11(_uploadFile, _downloadFile, value.cv)),
+        id: value.id,
+        portfolio: record_opt_to_undefined(await from_candid_opt_n11(_uploadFile, _downloadFile, value.portfolio)),
         name: value.name,
-        size: value.size,
-        uploadTime: value.uploadTime
+        education: await from_candid_vec_n13(_uploadFile, _downloadFile, value.education),
+        workExperience: value.workExperience,
+        email: value.email,
+        additionalFiles: await from_candid_vec_n16(_uploadFile, _downloadFile, value.additionalFiles),
+        timestamp: value.timestamp,
+        skills: value.skills
+    };
+}
+async function from_candid_record_n15(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    certificate: [] | [_ExternalBlob];
+    institution: string;
+    degree: string;
+    yearGraduated: bigint;
+}): Promise<{
+    certificate?: ExternalBlob;
+    institution: string;
+    degree: string;
+    yearGraduated: bigint;
+}> {
+    return {
+        certificate: record_opt_to_undefined(await from_candid_opt_n11(_uploadFile, _downloadFile, value.certificate)),
+        institution: value.institution,
+        degree: value.degree,
+        yearGraduated: value.yearGraduated
     };
 }
 function from_candid_record_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
@@ -278,10 +352,22 @@ function from_candid_record_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint
         topped_up_amount: record_opt_to_undefined(from_candid_opt_n7(_uploadFile, _downloadFile, value.topped_up_amount))
     };
 }
-async function from_candid_vec_n8(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_FileMetadata>): Promise<Array<FileMetadata>> {
-    return await Promise.all(value.map(async (x)=>await from_candid_FileMetadata_n9(_uploadFile, _downloadFile, x)));
+async function from_candid_vec_n13(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_Education>): Promise<Array<Education>> {
+    return await Promise.all(value.map(async (x)=>await from_candid_Education_n14(_uploadFile, _downloadFile, x)));
 }
-async function to_candid_ExternalBlob_n12(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: ExternalBlob): Promise<_ExternalBlob> {
+async function from_candid_vec_n16(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_ExternalBlob>): Promise<Array<ExternalBlob>> {
+    return await Promise.all(value.map(async (x)=>await from_candid_ExternalBlob_n12(_uploadFile, _downloadFile, x)));
+}
+async function from_candid_vec_n8(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_CertificationForm>): Promise<Array<CertificationForm>> {
+    return await Promise.all(value.map(async (x)=>await from_candid_CertificationForm_n9(_uploadFile, _downloadFile, x)));
+}
+async function to_candid_CertificationFormInput_n17(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: CertificationFormInput): Promise<_CertificationFormInput> {
+    return await to_candid_record_n18(_uploadFile, _downloadFile, value);
+}
+async function to_candid_Education_n21(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Education): Promise<_Education> {
+    return await to_candid_record_n22(_uploadFile, _downloadFile, value);
+}
+async function to_candid_ExternalBlob_n19(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: ExternalBlob): Promise<_ExternalBlob> {
     return await _uploadFile(value);
 }
 function to_candid__CaffeineStorageRefillInformation_n2(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _CaffeineStorageRefillInformation): __CaffeineStorageRefillInformation {
@@ -289,6 +375,54 @@ function to_candid__CaffeineStorageRefillInformation_n2(_uploadFile: (file: Exte
 }
 function to_candid_opt_n1(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _CaffeineStorageRefillInformation | null): [] | [__CaffeineStorageRefillInformation] {
     return value === null ? candid_none() : candid_some(to_candid__CaffeineStorageRefillInformation_n2(_uploadFile, _downloadFile, value));
+}
+async function to_candid_record_n18(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    cv?: ExternalBlob;
+    portfolio?: ExternalBlob;
+    name: string;
+    education: Array<Education>;
+    workExperience: Array<WorkExperience>;
+    email: string;
+    additionalFiles: Array<ExternalBlob>;
+    skills: Array<Skill>;
+}): Promise<{
+    cv: [] | [_ExternalBlob];
+    portfolio: [] | [_ExternalBlob];
+    name: string;
+    education: Array<_Education>;
+    workExperience: Array<_WorkExperience>;
+    email: string;
+    additionalFiles: Array<_ExternalBlob>;
+    skills: Array<_Skill>;
+}> {
+    return {
+        cv: value.cv ? candid_some(await to_candid_ExternalBlob_n19(_uploadFile, _downloadFile, value.cv)) : candid_none(),
+        portfolio: value.portfolio ? candid_some(await to_candid_ExternalBlob_n19(_uploadFile, _downloadFile, value.portfolio)) : candid_none(),
+        name: value.name,
+        education: await to_candid_vec_n20(_uploadFile, _downloadFile, value.education),
+        workExperience: value.workExperience,
+        email: value.email,
+        additionalFiles: await to_candid_vec_n23(_uploadFile, _downloadFile, value.additionalFiles),
+        skills: value.skills
+    };
+}
+async function to_candid_record_n22(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    certificate?: ExternalBlob;
+    institution: string;
+    degree: string;
+    yearGraduated: bigint;
+}): Promise<{
+    certificate: [] | [_ExternalBlob];
+    institution: string;
+    degree: string;
+    yearGraduated: bigint;
+}> {
+    return {
+        certificate: value.certificate ? candid_some(await to_candid_ExternalBlob_n19(_uploadFile, _downloadFile, value.certificate)) : candid_none(),
+        institution: value.institution,
+        degree: value.degree,
+        yearGraduated: value.yearGraduated
+    };
 }
 function to_candid_record_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     proposed_top_up_amount?: bigint;
@@ -298,6 +432,12 @@ function to_candid_record_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8A
     return {
         proposed_top_up_amount: value.proposed_top_up_amount ? candid_some(value.proposed_top_up_amount) : candid_none()
     };
+}
+async function to_candid_vec_n20(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<Education>): Promise<Array<_Education>> {
+    return await Promise.all(value.map(async (x)=>await to_candid_Education_n21(_uploadFile, _downloadFile, x)));
+}
+async function to_candid_vec_n23(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<ExternalBlob>): Promise<Array<_ExternalBlob>> {
+    return await Promise.all(value.map(async (x)=>await to_candid_ExternalBlob_n19(_uploadFile, _downloadFile, x)));
 }
 export interface CreateActorOptions {
     agent?: Agent;

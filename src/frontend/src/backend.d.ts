@@ -15,13 +15,45 @@ export class ExternalBlob {
     withUploadProgress(onProgress: (percentage: number) => void): ExternalBlob;
 }
 export type Time = bigint;
-export interface FileMetadata {
-    blob: ExternalBlob;
+export interface CertificationFormInput {
+    cv?: ExternalBlob;
+    portfolio?: ExternalBlob;
     name: string;
-    size: bigint;
-    uploadTime: Time;
+    education: Array<Education>;
+    workExperience: Array<WorkExperience>;
+    email: string;
+    additionalFiles: Array<ExternalBlob>;
+    skills: Array<Skill>;
+}
+export interface Skill {
+    name: string;
+    level: string;
+}
+export interface WorkExperience {
+    description: string;
+    company: string;
+    position: string;
+    durationInMonths: bigint;
+}
+export interface Education {
+    certificate?: ExternalBlob;
+    institution: string;
+    degree: string;
+    yearGraduated: bigint;
+}
+export interface CertificationForm {
+    cv?: ExternalBlob;
+    id: string;
+    portfolio?: ExternalBlob;
+    name: string;
+    education: Array<Education>;
+    workExperience: Array<WorkExperience>;
+    email: string;
+    additionalFiles: Array<ExternalBlob>;
+    timestamp: Time;
+    skills: Array<Skill>;
 }
 export interface backendInterface {
-    getFiles(): Promise<Array<FileMetadata>>;
-    uploadFile(blob: ExternalBlob, name: string, size: bigint): Promise<void>;
+    getForms(): Promise<Array<CertificationForm>>;
+    submitForm(input: CertificationFormInput): Promise<string>;
 }

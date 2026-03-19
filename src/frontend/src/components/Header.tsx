@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { Link, useRouterState } from "@tanstack/react-router";
-import { Globe, Menu, X } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { Globe, LogIn, LogOut, Menu, Settings, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const navItems = [
@@ -41,17 +42,17 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const routerState = useRouterState();
   const currentPath = routerState.location.pathname;
+  const { currentUser, logout, isAdmin } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close mobile menu on route change
   // biome-ignore lint/correctness/useExhaustiveDependencies: close menu on path changes
   useEffect(() => {
     setIsMobileMenuOpen(false);
@@ -60,6 +61,11 @@ export default function Header() {
   const isActive = (to: string) => {
     if (to === "/") return currentPath === "/";
     return currentPath.startsWith(to);
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate({ to: "/" });
   };
 
   return (
@@ -72,7 +78,7 @@ export default function Header() {
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
-          {/* Logo and Domain */}
+          {/* Logo */}
           <Link
             to="/"
             className="flex flex-col gap-0.5 hover:opacity-90 transition-opacity"
@@ -81,7 +87,6 @@ export default function Header() {
               <img
                 src="/assets/generated/lspbea-building-logo-transparent.dim_200x200.png"
                 alt="LSPBEA Indonesia – Building Logo"
-                title="LSPBEA Indonesia – Building Logo"
                 className="h-12 w-12 object-contain"
               />
               <span className="text-xl font-bold text-primary">
@@ -96,8 +101,8 @@ export default function Header() {
             </div>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8">
+          {/* Desktop Nav */}
+          <nav className="hidden md:flex items-center gap-6">
             {navItems.map((item) => (
               <Link
                 key={item.to}
@@ -112,9 +117,43 @@ export default function Header() {
                 {item.label}
               </Link>
             ))}
+
+            {currentUser ? (
+              <div className="flex items-center gap-3">
+                {isAdmin && (
+                  <Link
+                    to="/admin"
+                    data-ocid="nav.admin.link"
+                    className="flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+                  >
+                    <Settings className="h-4 w-4" />
+                    Admin
+                  </Link>
+                )}
+                <span className="text-sm text-muted-foreground">
+                  {currentUser.firstName}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleLogout}
+                  data-ocid="nav.button"
+                >
+                  <LogOut className="mr-1.5 h-3.5 w-3.5" />
+                  Keluar
+                </Button>
+              </div>
+            ) : (
+              <Link to="/login" data-ocid="nav.login.link">
+                <Button size="sm" data-ocid="nav.primary_button">
+                  <LogIn className="mr-1.5 h-3.5 w-3.5" />
+                  Masuk
+                </Button>
+              </Link>
+            )}
           </nav>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Toggle */}
           <Button
             variant="ghost"
             size="icon"
@@ -129,7 +168,7 @@ export default function Header() {
           </Button>
         </div>
 
-        {/* Mobile Navigation */}
+        {/* Mobile Nav */}
         {isMobileMenuOpen && (
           <nav className="md:hidden py-4 border-t">
             <div className="flex flex-col gap-4">
@@ -147,6 +186,35 @@ export default function Header() {
                   {item.label}
                 </Link>
               ))}
+              {currentUser ? (
+                <>
+                  {isAdmin && (
+                    <Link
+                      to="/admin"
+                      data-ocid="nav.mobile.admin.link"
+                      className="text-primary font-medium py-2"
+                    >
+                      Panel Admin
+                    </Link>
+                  )}
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    data-ocid="nav.mobile.button"
+                    className="text-left text-destructive font-medium py-2"
+                  >
+                    Keluar ({currentUser.firstName})
+                  </button>
+                </>
+              ) : (
+                <Link
+                  to="/login"
+                  data-ocid="nav.mobile.login.link"
+                  className="text-primary font-medium py-2"
+                >
+                  Masuk
+                </Link>
+              )}
             </div>
           </nav>
         )}

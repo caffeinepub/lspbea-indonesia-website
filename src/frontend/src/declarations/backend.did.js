@@ -20,12 +20,41 @@ export const _CaffeineStorageRefillResult = IDL.Record({
   'topped_up_amount' : IDL.Opt(IDL.Nat),
 });
 export const ExternalBlob = IDL.Vec(IDL.Nat8);
+export const Education = IDL.Record({
+  'certificate' : IDL.Opt(ExternalBlob),
+  'institution' : IDL.Text,
+  'degree' : IDL.Text,
+  'yearGraduated' : IDL.Nat,
+});
+export const WorkExperience = IDL.Record({
+  'description' : IDL.Text,
+  'company' : IDL.Text,
+  'position' : IDL.Text,
+  'durationInMonths' : IDL.Nat,
+});
 export const Time = IDL.Int;
-export const FileMetadata = IDL.Record({
-  'blob' : ExternalBlob,
+export const Skill = IDL.Record({ 'name' : IDL.Text, 'level' : IDL.Text });
+export const CertificationForm = IDL.Record({
+  'cv' : IDL.Opt(ExternalBlob),
+  'id' : IDL.Text,
+  'portfolio' : IDL.Opt(ExternalBlob),
   'name' : IDL.Text,
-  'size' : IDL.Nat,
-  'uploadTime' : Time,
+  'education' : IDL.Vec(Education),
+  'workExperience' : IDL.Vec(WorkExperience),
+  'email' : IDL.Text,
+  'additionalFiles' : IDL.Vec(ExternalBlob),
+  'timestamp' : Time,
+  'skills' : IDL.Vec(Skill),
+});
+export const CertificationFormInput = IDL.Record({
+  'cv' : IDL.Opt(ExternalBlob),
+  'portfolio' : IDL.Opt(ExternalBlob),
+  'name' : IDL.Text,
+  'education' : IDL.Vec(Education),
+  'workExperience' : IDL.Vec(WorkExperience),
+  'email' : IDL.Text,
+  'additionalFiles' : IDL.Vec(ExternalBlob),
+  'skills' : IDL.Vec(Skill),
 });
 
 export const idlService = IDL.Service({
@@ -55,8 +84,8 @@ export const idlService = IDL.Service({
       [],
     ),
   '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
-  'getFiles' : IDL.Func([], [IDL.Vec(FileMetadata)], ['query']),
-  'uploadFile' : IDL.Func([ExternalBlob, IDL.Text, IDL.Nat], [], []),
+  'getForms' : IDL.Func([], [IDL.Vec(CertificationForm)], ['query']),
+  'submitForm' : IDL.Func([CertificationFormInput], [IDL.Text], []),
 });
 
 export const idlInitArgs = [];
@@ -74,12 +103,41 @@ export const idlFactory = ({ IDL }) => {
     'topped_up_amount' : IDL.Opt(IDL.Nat),
   });
   const ExternalBlob = IDL.Vec(IDL.Nat8);
+  const Education = IDL.Record({
+    'certificate' : IDL.Opt(ExternalBlob),
+    'institution' : IDL.Text,
+    'degree' : IDL.Text,
+    'yearGraduated' : IDL.Nat,
+  });
+  const WorkExperience = IDL.Record({
+    'description' : IDL.Text,
+    'company' : IDL.Text,
+    'position' : IDL.Text,
+    'durationInMonths' : IDL.Nat,
+  });
   const Time = IDL.Int;
-  const FileMetadata = IDL.Record({
-    'blob' : ExternalBlob,
+  const Skill = IDL.Record({ 'name' : IDL.Text, 'level' : IDL.Text });
+  const CertificationForm = IDL.Record({
+    'cv' : IDL.Opt(ExternalBlob),
+    'id' : IDL.Text,
+    'portfolio' : IDL.Opt(ExternalBlob),
     'name' : IDL.Text,
-    'size' : IDL.Nat,
-    'uploadTime' : Time,
+    'education' : IDL.Vec(Education),
+    'workExperience' : IDL.Vec(WorkExperience),
+    'email' : IDL.Text,
+    'additionalFiles' : IDL.Vec(ExternalBlob),
+    'timestamp' : Time,
+    'skills' : IDL.Vec(Skill),
+  });
+  const CertificationFormInput = IDL.Record({
+    'cv' : IDL.Opt(ExternalBlob),
+    'portfolio' : IDL.Opt(ExternalBlob),
+    'name' : IDL.Text,
+    'education' : IDL.Vec(Education),
+    'workExperience' : IDL.Vec(WorkExperience),
+    'email' : IDL.Text,
+    'additionalFiles' : IDL.Vec(ExternalBlob),
+    'skills' : IDL.Vec(Skill),
   });
   
   return IDL.Service({
@@ -109,8 +167,8 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
-    'getFiles' : IDL.Func([], [IDL.Vec(FileMetadata)], ['query']),
-    'uploadFile' : IDL.Func([ExternalBlob, IDL.Text, IDL.Nat], [], []),
+    'getForms' : IDL.Func([], [IDL.Vec(CertificationForm)], ['query']),
+    'submitForm' : IDL.Func([CertificationFormInput], [IDL.Text], []),
   });
 };
 
